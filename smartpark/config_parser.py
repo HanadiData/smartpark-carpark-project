@@ -33,15 +33,24 @@ Finally, you can use `yaml` if you prefer.
 
 """
 
-
+from pathlib import Path
 
 def parse_config(config_file: str) -> dict:
-    """Parse the config file and return the values as a dictionary"""
-    import json
-    with open(config_file) as input_file:
-        config = json.load(input_file)
-    return config["CarParks"][0]
+    """Parse a simple key=value .txt config file and return a dictionary."""
+    config = {}
 
-if __name__ == '__main__':
-    cfg_data=parse_config("samples_and_snippets\\config.json")
-    print(cfg_data)
+    # Always look for the file in the same folder as this module
+    cfg_path = Path(__file__).with_name(config_file)
+
+    with cfg_path.open("r") as input_file:
+        for line in input_file:
+            line = line.strip()
+            if not line:
+                continue
+            if "=" in line:
+                key, value = line.split("=", 1)
+                config[key.strip()] = value.strip()
+
+    return config
+
+
